@@ -1,5 +1,6 @@
 library(googlesheets4)
 library(gargle)
+setwd("/Users/jannawilloughby/GDrive/loot/Bookclub/")
 
 #requires tidyverse install and google sheets integration api, or public sheet
 gs4_deauth()
@@ -36,7 +37,12 @@ for(b in 1:length(books)){
   ratings$min[b]    = min(temp$rating)
   ratings$max[b]    = max(temp$rating)
 }
+ratings$seq=seq(1,nrow(ratings),1)
+
+pdf("medianscores.pdf", width=5, height=5)
+plot(-100,-100, xlim=c(1,nrow(ratings)), ylim=c(1,10), xlab="book", ylab="score")
+colors=c("Dodgerblue3")
 
 
-
+dev.off()
 
