@@ -1,7 +1,7 @@
 library(googlesheets4)
 library(gargle)
 library(scales)
-setwd("/Users/jannawilloughby/GDrive/loot/Bookclub/")
+setwd("/Users/jannawilloughby/GDrive/loot/Bookclub/bookclub_ratings/")
 
 #requires tidyverse install and google sheets integration api, or public sheet
 gs4_deauth()
@@ -45,7 +45,7 @@ for(b in 1:length(books)){
 ratings$seq=seq(1,nrow(ratings),1)
 
 #plot some shit
-pdf("medianscores.pdf", width=5, height=5)
+pdf("medianscores.pdf", width=8, height=8)
 plot(-100,-100, xlim=c(0.25,(nrow(ratings)+0.25)), ylim=c(1,10), xlab="", ylab="", axes=F)
 axis(side=1, at=seq(1,nrow(ratings),1), labels=F, pos=1)
 text(x = 1:length(ratings$short), y = par("usr")[3] - 0.05, labels = ratings$short,xpd = NA,srt = 35,adj = 0.965,cex = 1.2)
