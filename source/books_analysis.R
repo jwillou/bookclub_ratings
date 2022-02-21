@@ -46,18 +46,20 @@ ratings$seq=seq(1,nrow(ratings),1)
 
 #plot some shit
 pdf("medianscores.pdf", width=8, height=8)
+par(mar = c(5, 5, 1, 1))
 plot(-100,-100, xlim=c(0.25,(nrow(ratings)+0.25)), ylim=c(1,10), xlab="", ylab="", axes=F)
 axis(side=1, at=seq(1,nrow(ratings),1), labels=F, pos=1)
 text(x = 1:length(ratings$short), y = par("usr")[3] - 0.05, labels = ratings$short,xpd = NA,srt = 35,adj = 0.965,cex = 1.2)
 segments(x0=0, x1=0.25+nrow(ratings), y0=1, y1=1)
 axis(side=2, at=seq(1,10,1), labels=T)
-colors=c("dodgerblue3", "firebrick3", "chartreuse3","goldenrod3", "darkorange1")
+colors=c("dodgerblue3", "firebrick3", "chartreuse3","grey50", "darkorange1")
 for(b in 1:length(books)){
   temp = data[data$book==as.character(books[b]),,drop=F]
   for(p in 1:length(readers)){
     r = temp[temp$reader==readers[p],,drop=F]
+    if(nrow(r)==0){next}
     if(nrow(r)>0){
-      points(jitter(b, 0.75), r$rating, pch=21, col=alpha(colors[p],1), bg=alpha(colors[p],0.5), cex=1.5)
+      points(jitter(b, 1.5), r$rating, pch=21, col=alpha(colors[p],1), bg=alpha(colors[p],0.5), cex=1.5)
     }
   }
   segments(x0=(b-0.25), x1=(b+0.25), y0=ratings$median[b], y1=ratings$median[b], lwd=1.5)
