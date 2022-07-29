@@ -16,6 +16,7 @@ colnames(meta) = c("book", "short", "reader", "month", "year")
 
 books = unique(data$book)
 readers = sort(unique(data$reader))
+colors=c("darkorange1", "firebrick3", "chartreuse3", "dodgerblue3","darkorchid3")
 
 #remove duplicated ratings 
 newlist = NULL
@@ -55,7 +56,6 @@ text(x = 1:length(ratings$short), y = par("usr")[3] - 0.05, labels = ratings$sho
 segments(x0=0, x1=0.25+nrow(ratings), y0=0.75, y1=0.75)
 axis(side=2, at=seq(1,10,1), labels=T)
 text(x=-2, y=5.5, labels = "ratings", xpd = NA, cex = 1.2, srt = 90)
-colors=c("darkorange1", "firebrick3", "chartreuse3", "dodgerblue3","darkorchid3")
 p=1
 for(b in 1:length(books)){
   if(p==1){
@@ -97,7 +97,6 @@ text(x = 1:length(indvs), y = par("usr")[3] - 0.5, labels = indvs, xpd = NA, cex
 segments(x0=0, x1=0.25+length(indvs), y0=0.75, y1=0.75)
 axis(side=2, at=seq(1,10,1), labels=T)
 text(x=-0.7, y=5.5, labels = "ratings", xpd = NA, cex = 1.2, srt = 90)
-colors=c("darkorange1", "firebrick3", "chartreuse3", "dodgerblue3","grey50")
 p=1
 for(b in 1:length(indvs)){
   if(p==1){
