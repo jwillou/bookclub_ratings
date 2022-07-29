@@ -1,8 +1,10 @@
 library(googlesheets4)
 library(gargle)
 library(scales)
-setwd("/Users/jannawilloughby/GDrive/loot/Bookclub/bookclub_ratings/")
+library(lme4)
+setwd("/Users/jannawilloughby/Documents/GDrive/loot/Bookclub/bookclub_ratings/")
 
+####setup####
 #requires tidyverse install and google sheets integration api, or public sheet
 gs4_deauth()
 data = read_sheet("https://docs.google.com/spreadsheets/d/1oBncOH7I_-keah3mvgpzcTlXhP95vR2SRa6gBlWSd2Y/edit?resourcekey#gid=216442974")
@@ -12,8 +14,8 @@ meta = read_sheet("https://docs.google.com/spreadsheets/d/1icRZXs63DR6EpW29qzdWF
 meta = as.data.frame(meta)
 colnames(meta) = c("book", "short", "reader", "month", "year")
 
-books = sort(unique(data$book))
-readers = unique(data$reader)
+books = unique(data$book)
+readers = sort(unique(data$reader))
 
 #remove duplicated ratings 
 newlist = NULL
@@ -44,15 +46,27 @@ for(b in 1:length(books)){
 }
 ratings$seq=seq(1,nrow(ratings),1)
 
-#plot some shit
-pdf("medianscores.pdf", width=8, height=8)
-par(mar = c(5, 5, 1, 1))
-plot(-100,-100, xlim=c(0.25,(nrow(ratings)+0.25)), ylim=c(1,10), xlab="", ylab="", axes=F)
-axis(side=1, at=seq(1,nrow(ratings),1), labels=F, pos=1)
+#####plot some shit -- by book####
+jpeg("medianscores.jpg", width=480, height=480)
+par(mar = c(5, 5, 1, 7), xpd=T)
+plot(-100,-100, xlim=c(0.25,(nrow(ratings)+0.25)), ylim=c(0.75,10), xlab="", ylab="", axes=F)
+axis(side=1, at=seq(1,nrow(ratings),1), labels=F, pos=0.75)
 text(x = 1:length(ratings$short), y = par("usr")[3] - 0.05, labels = ratings$short,xpd = NA,srt = 35,adj = 0.965,cex = 1.2)
-segments(x0=0, x1=0.25+nrow(ratings), y0=1, y1=1)
+segments(x0=0, x1=0.25+nrow(ratings), y0=0.75, y1=0.75)
 axis(side=2, at=seq(1,10,1), labels=T)
-colors=c("dodgerblue3", "firebrick3", "chartreuse3","grey50", "darkorange1")
+text(x=-2, y=5.5, labels = "ratings", xpd = NA, cex = 1.2, srt = 90)
+colors=c("darkorange1", "firebrick3", "chartreuse3", "dodgerblue3","darkorchid3")
+p=1
+for(b in 1:length(books)){
+  if(p==1){
+    polygon(x=c(b-.45, b+.45, b+.45, b-.45), y=c(0.95,0.95,10.1,10.1), col="grey95", border=NA)
+    p=0
+    next
+  }
+  if(p==0){
+    p=1
+  }
+}
 for(b in 1:length(books)){
   temp = data[data$book==as.character(books[b]),,drop=F]
   for(p in 1:length(readers)){
@@ -64,6 +78,46 @@ for(b in 1:length(books)){
   }
   segments(x0=(b-0.25), x1=(b+0.25), y0=ratings$median[b], y1=ratings$median[b], lwd=1.5)
 }
-legend(x=0.5,y=4.5, legend=readers, col=alpha(colors,0.5), pch=19, bg=NA, pt.bg=alpha(colors,0.5), cex=1.5, bty="n")
+legend(x=length(books)+1,y=4, legend=readers, col=alpha(colors,0.5), pch=19, bg=NA, pt.bg=alpha(colors,0.5), cex=1.5, bty="n")
 dev.off()
+
+#####are some of us consistently grumpier than others?####
+sink("indvscores_lm.txt")
+lm.out = lmer(rating~reader+(1|book)-1, data=data)
+summary(lm.out)
+sink()
+
+#plot some shit -- by reader
+jpeg("indvscores.jpg", width=480, height=480)
+indvs = sort(unique(data$reader))
+par(mar = c(5, 5, 1, 7), xpd=T)
+plot(-100,-100, xlim=c(0.25,(length(indvs)+0.25)), ylim=c(0.75,10), xlab="", ylab="", axes=F)
+axis(side=1, at=seq(1,length(indvs),1), labels=F, pos=0.75)
+text(x = 1:length(indvs), y = par("usr")[3] - 0.5, labels = indvs, xpd = NA, cex = 1.2)
+segments(x0=0, x1=0.25+length(indvs), y0=0.75, y1=0.75)
+axis(side=2, at=seq(1,10,1), labels=T)
+text(x=-0.7, y=5.5, labels = "ratings", xpd = NA, cex = 1.2, srt = 90)
+colors=c("darkorange1", "firebrick3", "chartreuse3", "dodgerblue3","grey50")
+p=1
+for(b in 1:length(indvs)){
+  if(p==1){
+    polygon(x=c(b-.45, b+.45, b+.45, b-.45), y=c(0.95,0.95,10.1,10.1), col="grey95", border=NA)
+    p=0
+    next
+  }
+  if(p==0){
+    p=1
+  }
+}
+for(b in 1:length(indvs)){
+  temp = data[data$reader==as.character(indvs[b]),,drop=F]
+  if(nrow(temp)==0){next}
+  else{
+    points(jitter(rep(b, nrow(temp[!is.na(temp$rating),]) ), 4), temp$rating, pch=21, col=alpha(colors[b],1), bg=alpha(colors[b],0.5), cex=1.5)
+  }
+  segments(x0=(b-0.25), x1=(b+0.25), y0=median(temp$rating), y1=median(temp$rating), lwd=1.5)
+}
+dev.off()
+
+
 
