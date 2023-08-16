@@ -2,29 +2,33 @@ Linear mixed model fit by REML ['lmerMod']
 Formula: rating ~ reader + (1 | book) - 1
    Data: data
 
-REML criterion at convergence: 175.9
+REML criterion at convergence: 266
 
 Scaled residuals: 
      Min       1Q   Median       3Q      Max 
--1.99301 -0.50888  0.03854  0.56000  2.16505 
+-2.09950 -0.67261  0.08501  0.60160  2.18132 
 
 Random effects:
  Groups   Name        Variance Std.Dev.
- book     (Intercept) 3.080    1.755   
- Residual             1.609    1.268   
-Number of obs: 48, groups:  book, 11
+ book     (Intercept) 2.969    1.723   
+ Residual             1.534    1.239   
+Number of obs: 72, groups:  book, 16
 
 Fixed effects:
             Estimate Std. Error t value
-readerAleks   7.4545     0.6529  11.418
-readerBob     6.0909     0.6529   9.329
-readerDevin   7.0665     0.6828  10.349
-readerJanna   6.7950     0.6665  10.196
-readerMatt    5.6119     0.7275   7.714
+readerAleks   7.7521     0.5378   14.41
+readerBob     6.5000     0.5305   12.25
+readerDevin   7.3637     0.5461   13.48
+readerJanna   6.7077     0.5378   12.47
+readerMatt    6.1231     0.5662   10.81
 
 Correlation of Fixed Effects:
             rdrAlk redrBb rdrDvn rdrJnn
-readerBob   0.657                      
-readerDevin 0.628  0.628               
-readerJanna 0.643  0.643  0.614        
-readerMatt  0.590  0.590  0.554  0.573 
+readerBob   0.650                      
+readerDevin 0.631  0.641               
+readerJanna 0.641  0.650  0.631        
+readerMatt  0.607  0.618  0.596  0.607 
+readerAleks   readerBob readerDevin readerJanna  readerMatt 
+   6.698000    5.460238    6.293436    5.653557    5.013284 
+readerAleks   readerBob readerDevin readerJanna  readerMatt 
+   8.806218    7.539762    8.434063    7.761775    7.232932 

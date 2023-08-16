@@ -2,7 +2,7 @@ library(googlesheets4)
 library(gargle)
 library(scales)
 library(lme4)
-setwd("/Users/jannawilloughby/GDrive/loot/Bookclub/bookclub_ratings/")
+setwd("/Users/jannawilloughby/Google Drive/My Drive/loot/Bookclub/bookclub_ratings/")
 
 ####setup####
 #requires tidyverse install and google sheets integration api, or public sheet
@@ -48,7 +48,7 @@ for(b in 1:length(books)){
 ratings$seq=seq(1,nrow(ratings),1)
 
 #####plot some shit -- by book####
-jpeg("medianscores.jpg", width=480, height=480)
+jpeg("medianscores.jpg", width=680, height=480)
 par(mar = c(5, 5, 2, 7), xpd=T)
 plot(-100,-100, xlim=c(0.25,(nrow(ratings)+0.25)), ylim=c(0.75,10), xlab="", ylab="", axes=F)
 axis(side=1, at=seq(1,nrow(ratings),1), labels=F, pos=0.75)
@@ -85,8 +85,8 @@ dev.off()
 sink("indvscores_lm.txt")
 lm.out = lmer(rating~reader+(1|book)-1, data=data)
 summary(lm.out)
-summary(lm.out)$coeff[1,1]-(1.96*summary(lm.out)$coeff[1,2])
-summary(lm.out)$coeff[5,1]+(1.96*summary(lm.out)$coeff[5,2])
+summary(lm.out)$coeff[, 1]-(1.96*summary(lm.out)$coeff[ ,2])
+summary(lm.out)$coeff[, 1]+(1.96*summary(lm.out)$coeff[ ,2])
 sink()
 
 
@@ -122,8 +122,52 @@ for(b in 1:length(indvs)){
 }
 dev.off()
 
-
-
+#plot some shit -- by reader but normalized/adjusted score
+jpeg("indvscores_adjusted.jpg", width=480, height=480)
+indvs = sort(unique(data$reader))
+par(mar = c(5, 5, 1, 7), xpd=T)
+plot(-100,-100, xlim=c(0.25,(length(indvs)+0.25)), ylim=c(0.75,10), xlab="", ylab="", axes=F)
+axis(side=1, at=seq(1,length(indvs),1), labels=F, pos=0.75)
+text(x = 1:length(indvs), y = par("usr")[3] - 0.5, labels = indvs, xpd = NA, cex = 1.2)
+segments(x0=0, x1=0.25+length(indvs), y0=0.75, y1=0.75)
+axis(side=2, at=seq(1,10,1), labels=T)
+text(x=-0.7, y=5.5, labels = "ratings", xpd = NA, cex = 1.2, srt = 90)
+p=1
+for(b in 1:length(indvs)){
+  if(p==1){
+    polygon(x=c(b-.45, b+.45, b+.45, b-.45), y=c(0.95,0.95,10.1,10.1), col="grey95", border=NA)
+    p=0
+    next
+  }
+  if(p==0){
+    p=1
+  }
+}
+#setup adjustments
+data$adjustrank = rep(NA, nrow(data))
+for(b in 1:length(indvs)){
+  #calcualte adjusted scale per person (rescaling to 1-10)
+  temp = data[data$reader==as.character(indvs[b]),,drop=F]
+  mins = min(temp$rating, na.rm=T)
+  maxs = max(temp$rating, na.rm=T)
+  newscale = mm = 1
+  for(m in 1:(maxs-mins)){
+    newscale = c(newscale, (mm + (9/(maxs-mins))))
+    mm = mm + (9/(maxs-mins))
+  }
+  newscale = data.frame(newscale = newscale, oldscale = seq(mins, maxs, 1))
+  for(rr in 1:nrow(newscale)){
+    data$adjustrank[data$reader==as.character(indvs[b]) & data$rating == as.numeric(newscale$oldscale[rr])] = as.numeric(newscale$newscale[rr])
+  }
+  temp = data[data$reader==as.character(indvs[b]),,drop=F]
+  if(nrow(temp)==0){next}
+  else{
+    temp$adjustrank[is.na(temp$adjustrank)] = -9
+    points(jitter(rep(b, nrow(temp[!is.na(temp$adjustrank),]) ), 4), temp$adjustrank, pch=21, col=alpha(colors[b],1), bg=alpha(colors[b],0.5), cex=1.5)
+  }
+  segments(x0=(b-0.25), x1=(b+0.25), y0=median(temp$adjustrank), y1=median(temp$adjustrank), lwd=1.5)
+}
+dev.off()
 
 #####do biographical differences between authors relate to our differences in ratings?####
 #####are some of us  just shitty book-pickers?####
@@ -141,8 +185,8 @@ data = as.data.frame(OUT)
 sink("pickscores_lm.txt")
 lm.out = lmer(rating~picker+(1|book)-1, data=data)
 summary(lm.out)
-summary(lm.out)$coeff[2,1]+(1.96*summary(lm.out)$coeff[2,2])
-summary(lm.out)$coeff[3,1]+(1.96*summary(lm.out)$coeff[3,2])
+summary(lm.out)$coeff[, 1]-(1.96*summary(lm.out)$coeff[ ,2])
+summary(lm.out)$coeff[, 1]+(1.96*summary(lm.out)$coeff[ ,2])
 sink()
 
 #plot some shit -- by reader
