@@ -74,7 +74,7 @@ for(b in 1:length(books)){
     r = temp[temp$reader==readers[p],,drop=F]
     if(nrow(r)==0){next}
     if(nrow(r)>0){
-      points(jitter(b, 1.5), r$rating, pch=21, col=alpha(colors[p],1), bg=alpha(colors[p],0.5), cex=1.5)
+      points(jitter(b,0.75), r$rating, pch=21, col=alpha(colors[p],1), bg=alpha(colors[p],0.5), cex=1.5)
     }
   }
   segments(x0=(b-0.25), x1=(b+0.25), y0=ratings$median[b], y1=ratings$median[b], lwd=1.5)
