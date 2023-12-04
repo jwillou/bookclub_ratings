@@ -2,7 +2,8 @@ library(googlesheets4)
 library(gargle)
 library(scales)
 library(lme4)
-setwd("/Users/jannawilloughby/Google Drive/My Drive/loot/Bookclub/bookclub_ratings/")
+#setwd("/Users/jannawilloughby/Google Drive/My Drive/loot/Bookclub/bookclub_ratings/output/")
+setwd("/Users/jrw0107/Google Drive/My Drive/loot/Bookclub/bookclub_ratings/output/")
 
 ####setup####
 #requires tidyverse install and google sheets integration api, or public sheet
@@ -49,10 +50,10 @@ ratings$seq=seq(1,nrow(ratings),1)
 
 #####plot some shit -- by book####
 jpeg("medianscores.jpg", width=680, height=480)
-par(mar = c(5, 5, 2, 7), xpd=T)
+par(mar = c(5, 5, 2, 5), xpd=T)
 plot(-100,-100, xlim=c(0.25,(nrow(ratings)+0.25)), ylim=c(0.75,10), xlab="", ylab="", axes=F)
 axis(side=1, at=seq(1,nrow(ratings),1), labels=F, pos=0.75)
-text(x = 1:length(ratings$short), y = par("usr")[3] - 0.05, labels = ratings$short,xpd = NA,srt = 35,adj = 0.965,cex = 1.2)
+text(x = 1:length(ratings$short), y = par("usr")[3] - 0.05, labels = ratings$short,xpd = NA,srt = 35,adj = 0.965,cex = .8)
 segments(x0=0, x1=0.25+nrow(ratings), y0=0.75, y1=0.75)
 axis(side=2, at=seq(1,10,1), labels=T)
 text(x=-2, y=5.5, labels = "ratings", xpd = NA, cex = 1.2, srt = 90)
@@ -78,7 +79,7 @@ for(b in 1:length(books)){
   }
   segments(x0=(b-0.25), x1=(b+0.25), y0=ratings$median[b], y1=ratings$median[b], lwd=1.5)
 }
-legend(x=length(books)+1,y=4, legend=readers, col=alpha(colors,0.5), pch=19, bg=NA, pt.bg=alpha(colors,0.5), cex=1.5, bty="n")
+legend(x=length(books)+1,y=4, legend=readers, col=alpha(colors,0.5), pch=19, bg=NA, pt.bg=alpha(colors,0.5), cex=0.8, bty="n")
 dev.off()
 
 #####are some of us consistently grumpier than others?####
@@ -170,6 +171,8 @@ for(b in 1:length(indvs)){
 dev.off()
 
 #####do biographical differences between authors relate to our differences in ratings?####
+#TBD
+
 #####are some of us  just shitty book-pickers?####
 OUT = NULL
 for(r in 1:nrow(data)){

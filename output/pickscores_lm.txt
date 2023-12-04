@@ -1,0 +1,34 @@
+Linear mixed model fit by REML ['lmerMod']
+Formula: rating ~ picker + (1 | book) - 1
+   Data: data
+
+REML criterion at convergence: 394
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-2.3451 -0.5853  0.1486  0.6116  2.8199 
+
+Random effects:
+ Groups   Name        Variance Std.Dev.
+ book     (Intercept) 3.482    1.866   
+ Residual             1.700    1.304   
+Number of obs: 105, groups:  book, 23
+
+Fixed effects:
+            Estimate Std. Error t value
+pickerAleks   7.8706     0.9828   8.008
+pickerBob     5.8612     0.8781   6.675
+pickerDevin   6.9684     0.8781   7.936
+pickerJanna   7.6504     0.8781   8.713
+pickerMatt    6.1239     0.9828   6.231
+
+Correlation of Fixed Effects:
+            pckrAl pckrBb pckrDv pckrJn
+pickerBob   0.000                      
+pickerDevin 0.000  0.000               
+pickerJanna 0.000  0.000  0.000        
+pickerMatt  0.000  0.000  0.000  0.000 
+pickerAleks   pickerBob pickerDevin pickerJanna  pickerMatt 
+   5.944283    4.140106    5.247360    5.929360    4.197558 
+pickerAleks   pickerBob pickerDevin pickerJanna  pickerMatt 
+   9.796942    7.582245    8.689499    9.371499    8.050217 
